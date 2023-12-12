@@ -1,5 +1,10 @@
 # Database_CW1
 
+To View Query:
+
+SELECT * FROM Customer_Order_Restricted_Info
+WHERE (CreditLimitNumber > 1000) AND (ShippedDate < "2010-01-01");
+
 Database Structure
 
 Offices
