@@ -1,0 +1,117 @@
+CREATE DATABASE pn98;
+USE pn98;
+
+CREATE TABLE Offices (
+    PhoneNumber VARCHAR(15),
+    City VARCHAR(20),
+    Territory VARCHAR(15),
+    PostalCode VARCHAR(8),
+    OfficeCode NUMERIC(4) PRIMARY KEY,
+    AddressLine1 VARCHAR(30),
+    AddressLine2 VARCHAR(30),
+    County VARCHAR(15),
+    Country VARCHAR(15)
+);
+
+INSERT INTO Offices VALUES 
+    (07739960748, "Dublin", "Irish", "BH78 192", 2921, "49 St.Ives Road", "South Dublin", "Leinster", "Ireland"),
+    (07736960721, "London", "English", "LO62 672", 3292, "52 Leicester Square Road", "North London", "LONDON", "England"),
+    (07735960799, "Glasgow", "Scottish", "GL88 104", 4501, "11 High Street", "East Glasgow", "Lanarkshire", "Scotland"),
+    (07733960701, "Cardiff", "Welsh", "CA62 109", 5467, "17 Manor Road", "Main Street", "Glamorgan", "Wales");
+
+CREATE TABLE Employee (
+    EmployeeNumber NUMERIC(5) PRIMARY KEY, 
+    FirstName VARCHAR(10), 
+    LastName VARCHAR(10),
+    Extension NUMERIC(3),
+    JobTitle VARCHAR(30),
+    OfficeCode NUMERIC(4),
+    EmailAddress VARCHAR(25),
+    INDEX (OfficeCode),
+    CONSTRAINT FK_OfficeCode_Employee FOREIGN KEY(OfficeCode) REFERENCES Offices(OfficeCode)
+);
+
+INSERT INTO Employee VALUES
+    (55784, "John", "McGee", 202, "Manager", 2921, "johnmcgee674@gmail.com"),
+    (27384, "Michael", "Kane", 432, "Sales", 3292, "michaelKane901@gmail.com"),
+    (90724, "Jack", "Clarke", 457, "Pharmacist", 4501, "jackclarke452@gmail.com"),
+    (42517, "Thomas", "Foster", 301, "Sales Analyst", 5467, "thomasfoster@gmail.com");
+
+CREATE TABLE RepresensitiveEmployee (
+    FirstName VARCHAR(15),
+    LastName VARCHAR(15),
+    RepresensitiveEmployeeNumber NUMERIC(3) PRIMARY KEY,
+    Extension NUMERIC(3),
+    OfficeCode NUMERIC(4),
+    JobTitle VARCHAR(20),
+    EmailAddress VARCHAR(50),
+    INDEX (OfficeCode),
+    CONSTRAINT FK_OfficeCode_ReportingEmployee FOREIGN KEY(OfficeCode) REFERENCES Offices(OfficeCode)
+);
+
+INSERT INTO RepresensitiveEmployee VALUES
+    ("Jessie", "McGinty", 812, 299, 2921, "Assistant Manager", "jmcginty19@gmail.com"),
+    ("Mark", "O'Neill", 131, 002, 3292, "Pharmacist", "markoneill@gmail.com"),
+    ("Isabelle", "Nicholson", 285, 109, 3292, "Sales", "isabellenicholson@gmail.com"),
+    ("Charles", "Burns", 273, 878, 2921, "Pharamacist", "charlesburns55@gmail.com");
+
+CREATE TABLE Customers (
+    Country VARCHAR(10),
+    SalesAmount NUMERIC(8,2),
+    RepresensitiveEmployeeNumber NUMERIC(3),
+    AddressLine1 VARCHAR(30),
+    AddressLine2 VARCHAR(30),
+    FirstName VARCHAR(15),
+    LastName VARCHAR(15),
+    PhoneNumber NUMERIC(11),
+    CustomerNumber NUMERIC(3) PRIMARY KEY,
+    City VARCHAR(20),
+    County VARCHAR(15),
+    PostalCode VARCHAR(8),
+    CreditLimitNumber NUMERIC(6,2),
+    INDEX (RepresensitiveEmployeeNumber),
+    CONSTRAINT FK_RepresensitiveEmployeeNumber_Customers FOREIGN KEY(RepresensitiveEmployeeNumber) REFERENCES RepresensitiveEmployee(RepresensitiveEmployeeNumber)
+);
+
+INSERT INTO Customers VALUES
+    ("France", 20.00, 812, "Hyndburn Cottage, Bates Street", "Clayton Le Moors", "Patrice", "Arnold", 07813421901, 890, "Paris", "Ile-De-France", "PA90 1SA", 5000.00),
+    ("Italy", 13.00, 273, "20 Moor Close", "Darwen", "Alex", "Leonardo", 07813428921, 646, "Rome", "Floyd County", "RO89 R5T", 7000.00),
+    ("England", 5.00, 131, "5 Middleton Drive", "Barrowford", "Dennis", "Charlson", 078139064738, 012, "London", "LONDON", "LO9 1SD", 9000.00),
+    ("England", 7.50, 285, "2 Eastern Avenue", "Haverhill", "Arthur", "Murphy", 078134901892, 343, "Oxford", "Oxfordshire", "OX91 H7S", 9000.00);
+
+CREATE TABLE PaymentInformation (
+    CustomerNumber NUMERIC(3),
+    ChequeNumber NUMERIC(5),
+    PaymentDate DATE,
+    AmountPaid NUMERIC(8,2),
+    INDEX (CustomerNumber),
+    CONSTRAINT FK_CustomerNumber_PaymentInformation FOREIGN KEY(CustomerNumber) REFERENCES Customers(CustomerNumber)
+);
+
+INSERT INTO PaymentInformation VALUES
+    (890, 5070, "2022-12-19", 500.00),
+    (646, 2026, "2022-12-22", 250.00),
+    (012, 9023, "2023-01-10", 1000.00),
+    (343, 1009, "2023-01-23", 77.50);
+
+CREATE TABLE PrescriptionOrders (
+    OrderNumber NUMERIC(3) PRIMARY KEY,
+    OrderDate DATE,
+    RequiredDate DATE,
+    ShippedDate DATE,
+    OrderStatus VARCHAR(10),
+    Comments VARCHAR(20),
+    PharmaceuticalCustomerNumber NUMERIC(3),
+    INDEX (PharmaceuticalCustomerNumber),
+    CONSTRAINT FK_PharmaceuticalCustomerNumber_PrescriptionOrders FOREIGN KEY(PharmaceuticalCustomerNumber) REFERENCES Customers(CustomerNumber)
+);
+
+INSERT INTO PrescriptionOrders VALUES
+    (901, "2008-10-9", "2008-10-19","2008-10-16", "Shipped", "Standard Delivery", 890),
+    (921, "2017-11-12", "2017-11-22","2017-11-20", "Delivered", "Standard Delivery", 646),
+    (972, "2019-02-9", "2019-02-19","2019-02-16", "Shipped", "First Class Delivery", 343),
+    (998, "2020-10-9", "2020-10-19","2020-10-16", "Delivered", "Standard Delivery", 890);
+
+CREATE TABLE ProductLine (
+    ProductLineID VARCHAR(3) PRIMARY KEY,
+   
